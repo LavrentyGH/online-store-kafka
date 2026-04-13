@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: service-orders
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        asks: all
+        retries: 3
+        enable.idempotence: true
+        spring.json.type.mapping: orderEvent:com.example.dto.OrderEvent
+
+server:
+  port: 8081
+
+logging:
+  level:
+    com.example.serviceorders: DEBUG
+    org.springframework.kafka: INFO
+
+

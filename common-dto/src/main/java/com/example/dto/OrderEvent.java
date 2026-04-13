@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-record OrderEvent(
+public record OrderEvent(
         @JsonProperty("orderId")
         @NotNull
         UUID orderId,
@@ -24,7 +24,7 @@ record OrderEvent(
         @NotNull
         String product,
 
-        @JsonProperty("stasus")
+        @JsonProperty("status")
         @NotNull
         OrderStatus status
 ) {
