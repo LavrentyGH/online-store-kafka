@@ -29,6 +29,7 @@ public class OrderProducer {
                 result.getRecordMetadata().offset());
             } else {
                 log.error("Failed send order: {}", orderEvent.orderId());
+                //todo Обеспечьте механизм обработки ошибок и переотправки сообщений в случае сбоев.
             }
         });
     }

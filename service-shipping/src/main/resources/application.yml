@@ -1,0 +1,35 @@
+spring:
+  application:
+    name: service-shipping
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: sent-service-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "com.example.dto"
+        spring.json.type.mapping: orderEvent:com.example.dto.OrderEvent
+
+        max.poll.records: 50
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.type.mapping: orderEvent:com.example.dto.OrderEvent
+    listener:
+      concurrency: 3
+
+  server:
+    port: 8083
+
+  logging:
+    level:
+      com.example.payment: DEBUG
+      org.springframework.kafka: INFO
+
+  # ???????? ???????? ????????? ??????? (??) todo
+  payment:
+    shipping-delay-ms: 2000
+    success-rate: 0.98  # 95% ???????? ????????

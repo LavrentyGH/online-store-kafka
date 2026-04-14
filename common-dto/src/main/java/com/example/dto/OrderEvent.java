@@ -40,6 +40,16 @@ public record OrderEvent(
         }
     }
 
+    public OrderEvent withStatus(OrderStatus newStatus) {
+        return new OrderEvent(
+                this.orderId,
+                this.userId,
+                this.amount,
+                this.product,
+                newStatus
+        );
+    }
+
     public static Builder builder() {
         return new Builder();
     }

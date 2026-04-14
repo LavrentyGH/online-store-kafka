@@ -27,9 +27,9 @@
   <modules>
     <module>common-dto</module>
     <module>service-orders</module>
-<!--    <module>service-payment</module>-->
-<!--    <module>service-shipping</module>-->
-<!--    <module>service-notifications</module>-->
+    <module>service-payment</module>
+    <module>service-shipping</module>
+    <module>service-notifications</module>
   </modules>
 
   <dependencyManagement>
