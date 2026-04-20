@@ -16,10 +16,6 @@ public class PaymentProducer {
     private final KafkaTemplate<String, OrderEvent> kafkaTemplate;
     private static final String TOPIC = "payed_orders";
 
-    /**
-     * Отправляет оплаченный заказ в Kafka.
-     * Используем тот же ключ (orderId) для сохранения порядка.
-     */
     public void sendPayedOrder(OrderEvent paidOrder) {
         String key = paidOrder.orderId().toString();
 
@@ -36,7 +32,6 @@ public class PaymentProducer {
                         result.getRecordMetadata().offset());
             } else {
                 log.error(" Failed to send paid order: {}", paidOrder.orderId(), ex);
-                //todo Обеспечьте механизм обработки ошибок и переотправки сообщений в случае сбоев.
             }
         });
     }

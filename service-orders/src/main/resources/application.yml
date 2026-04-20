@@ -19,5 +19,10 @@ logging:
   level:
     com.example.serviceorders: DEBUG
     org.springframework.kafka: INFO
-
+kafka:
+  topics:
+    orders:
+      new: new_orders
+      partitions: 2
+      replicas: 1
 

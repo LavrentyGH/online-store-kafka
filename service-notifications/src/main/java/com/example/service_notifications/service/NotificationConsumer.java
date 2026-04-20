@@ -2,7 +2,6 @@ package com.example.service_notifications.service;
 
 import com.example.dto.OrderEvent;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.annotation.Order;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;

@@ -31,7 +31,6 @@ public class ShippingProducer {
                         result.getRecordMetadata().offset());
             } else {
                 log.error(" Failed to send shipped order: {}", sentOrder.orderId(), ex);
-                //todo Обеспечьте механизм обработки ошибок и переотправки сообщений в случае сбоев.
             }
         });
     }

@@ -11,6 +11,7 @@ import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Service;
 
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -19,6 +20,8 @@ import java.util.concurrent.TimeUnit;
 public class ShippingConsumer {
     private final ShippingProducer shippingProducer;
     private final Random random = new Random();
+
+    private final ConcurrentHashMap<String, Boolean> processedOrders = new ConcurrentHashMap<>();
 
     @Value("${payment.processing-delay-ms:2000}")
     private long processingDelayMs;
@@ -33,27 +36,40 @@ public class ShippingConsumer {
     public void processNewOrder(OrderEvent orderEvent,
                                 @Header(KafkaHeaders.RECEIVED_PARTITION) int partition,
                                 @Header(KafkaHeaders.OFFSET) long offset) {
-        try {
-            TimeUnit.MILLISECONDS.sleep(processingDelayMs);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            log.error("Payment processing interrupted for order: {}", orderEvent.orderId());
+        String orderId = orderEvent.orderId().toString();
+        if (processedOrders.containsKey(orderId)) {
+            log.warn("Order {} already processed in shipping!", orderId);
+
+            if (!processedOrders.get(orderId)) {
+                log.info("Resending to sent_orders...");
+                shippingProducer.sendShippingOrder(orderEvent.withStatus(OrderStatus.SENT));
+                processedOrders.put(orderId, true);
+            }
             return;
         }
 
-        boolean shippingSuccess  = random.nextDouble() < successRate;
+        processedOrders.put(orderId, false);
 
-        if (shippingSuccess) {
-            OrderEvent sentOrder = orderEvent.withStatus(OrderStatus.SENT);
+        try {
+            TimeUnit.MILLISECONDS.sleep(processingDelayMs);
 
-            log.info(" Shipping successful for order: {}. Sending to payed_orders",
-                    orderEvent.orderId());
+            boolean shippingSuccess  = random.nextDouble() < successRate;
 
-            shippingProducer.sendShippingOrder(sentOrder);
-        } else {
-            log.warn(" Shipping FAILED for order: {}. Sending to DLQ (not implemented)",
-                    orderEvent.orderId());
-            // todo: Отправить в DLT
+            if (shippingSuccess) {
+                OrderEvent sentOrder = orderEvent.withStatus(OrderStatus.SENT);
+
+                log.info(" Shipping successful for order: {}. Sending to payed_orders",
+                        orderEvent.orderId());
+
+                shippingProducer.sendShippingOrder(sentOrder);
+            } else {
+                log.warn(" Shipping FAILED for order: {}. Sending to DLQ (not implemented)",
+                        orderEvent.orderId());
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            log.error("Payment processing interrupted for order: {}", orderEvent.orderId());
+            throw new RuntimeException(e);
         }
     }
 }
