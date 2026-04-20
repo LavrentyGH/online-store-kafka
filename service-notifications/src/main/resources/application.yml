@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: service-notifications
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: notifications-service-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "com.example.dto"
+        spring.json.type.mapping: orderEvent:com.example.dto.OrderEvent
+        max.poll.records: 50
+    listener:
+      concurrency: 3
+
+  server:
+    port: 8084
+
+  logging:
+    level:
+      com.example.notifications: DEBUG
+      org.springframework.kafka: INFO

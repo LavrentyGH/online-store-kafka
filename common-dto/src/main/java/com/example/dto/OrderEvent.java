@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-record OrderEvent(
+public record OrderEvent(
         @JsonProperty("orderId")
         @NotNull
         UUID orderId,
@@ -24,7 +24,7 @@ record OrderEvent(
         @NotNull
         String product,
 
-        @JsonProperty("stasus")
+        @JsonProperty("status")
         @NotNull
         OrderStatus status
 ) {
@@ -38,6 +38,16 @@ record OrderEvent(
         if (amount != null && amount.compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Amount must be positive: " + amount);
         }
+    }
+
+    public OrderEvent withStatus(OrderStatus newStatus) {
+        return new OrderEvent(
+                this.orderId,
+                this.userId,
+                this.amount,
+                this.product,
+                newStatus
+        );
     }
 
     public static Builder builder() {
